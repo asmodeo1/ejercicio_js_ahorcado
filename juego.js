@@ -46,6 +46,8 @@ const palabras = [
     "vulnerable", "zoologia", "zumbador"
 ];
 
+// Creamos una serie de variables y constantes globales para que
+// existan durante toda la vida de la página
 let palabra = "";
 let fallos = 0;
 let aciertos = 0;
@@ -54,20 +56,26 @@ let letrasPosibles = "abcdefghijklmnopqrstuvwxyz";
 
 function comprobar() {
     const letra = document.getElementById("letra");
+    // Comprobamos si la letra está vacía. Con trim quitamos los espacios en blanco
+    // que pueda haber por la izquierda y por la derecha
     if(letra.value.trim() == "") {
         window.alert("Debes escribir la letra");
         letra.focus();
         letra.select();
         return;
     }
+    // Comprobamos si la letra está dentro de una de las válidas.
+    // indexOf devuelve -1 si no la encuentra
     if(letrasPosibles.indexOf(letra.value.toLowerCase()) == -1) {
         window.alert("Letra no válida");
         letra.focus();
         letra.select();
         return;
     }
+    // Eliminamos la letra introducida de las posibles, para que no se vuelva a introducir
     letrasPosibles = letrasPosibles.replace(letra.value.toLowerCase(), "");
 
+    // Añadimos la letra al div de las letras usadas
     const letrasUsadas = document.getElementById("letrasUsadas");
     letrasUsadas.textContent += letra.value;
 
@@ -76,17 +84,21 @@ function comprobar() {
 
     // Vemos si la letra no está en la palabra
     if(palabra.indexOf(letra.value) == -1) {
-        fallos++; // fallos += 1; fallos = fallos + 1;
+        fallos++; // o fallos += 1; o fallos = fallos + 1;
         const span = document.querySelector("#fallos span");
-        //const span = document.getElementById("fallos").getElementsByTagName("span")[0];
+        // o const span = document.getElementById("fallos").getElementsByTagName("span")[0];
         span.textContent = fallos;
         const horca = document.getElementById("horca");
+        // Cada "imagen" tiene 261px de ancho
         horca.style.backgroundPosition = fallos * -261 + "px";
+        // Comprobamos si se han consumido los intentos máximos
         if (fallos == INTENTOS_MAXIMOS) {
             mostrarResultado("☹️ Has perdido");
         }
         return;
     }
+    // Comprovamos si la letra está en la palabra, en cuyo caso aumentamos el número
+    // de aciertos
     const spanes = document.querySelectorAll("#solucion span");
     for (let i = 0; i < palabra.length; i++) {
         if(letra.value.toLowerCase() === palabra[i]) {
@@ -95,12 +107,14 @@ function comprobar() {
         }
     }
 
-    // Ver si ganó
+    // Comprobamos si ganó (el número de aciertos debe ser igual a la longitud de la palabra)
     if (aciertos == palabra.length) {
         mostrarResultado("😄 Has ganado");
     }
 }
 
+// Como al ganar y al perder hay que hacer básicamente lo mismo, creamos una función 
+// para no repetir código; solo cambia el mensaje a mostrar
 function mostrarResultado(texto) {
     document.getElementById("comprobar").disabled = true;
     const resultado = document.getElementById("resultado");
@@ -109,28 +123,37 @@ function mostrarResultado(texto) {
 }
 
 function reiniciar() {
+    // Debemos limpiar e inicializar todo de nuevo
     document.getElementById("comprobar").disabled = false;
     fallos = 0;
     aciertos = 0;
+    // Hay que volver a poner todas las letras como posibles
     letrasPosibles = "abcdefghijklmnopqrstuvwxyz";
     const horca = document.getElementById("horca");
+    // Ponemos de nuevo la "primera imagen"
     horca.style.backgroundPosition = 0;
     document.getElementById("solucion").textContent = "";
     const span = document.querySelector("#fallos span");
+    // Moostramos 0 en los fallos
     span.textContent = 0;
     const letrasUsadas = document.getElementById("letrasUsadas");
+    // Limpiamos las letras usadas
     letrasUsadas.textContent = "";
     const letra = document.getElementById("letra");
     letra.value = "";
     letra.focus();
+    // Generamos la nueva palabra usando la función iniciar
     iniciar();
 }
 
 function iniciar() {
+    // Generammos una posición entre 0 y el númer de palabras - 1
     const posicion = Math.floor(Math.random() * palabras.length);
+    // Cogemos la palabra de esa posición
     palabra = palabras[posicion];
-    //palabra = palabras[Math.floor(Math.random() * palabras.length)];
+    //o palabra = palabras[Math.floor(Math.random() * palabras.length)];
     const solucion = document.getElementById("solucion");
+    // Debemos crear tantas _ como letras tenga la palabra
     for (const letra of palabra) {
         const span = document.createElement("span");
         span.classList.add("m-2");
