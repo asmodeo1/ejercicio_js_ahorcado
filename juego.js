@@ -45,3 +45,108 @@ const palabras = [
     "vegetacion", "ventajoso", "versatilidad", "vigilante", "voluntario",
     "vulnerable", "zoologia", "zumbador"
 ];
+
+let palabra = "";
+let fallos = 0;
+let aciertos = 0;
+const INTENTOS_MAXIMOS = 6; 
+let letrasPosibles = "abcdefghijklmnopqrstuvwxyz";
+
+function comprobar() {
+    const letra = document.getElementById("letra");
+    if(letra.value.trim() == "") {
+        window.alert("Debes escribir la letra");
+        letra.focus();
+        letra.select();
+        return;
+    }
+    if(letrasPosibles.indexOf(letra.value.toLowerCase()) == -1) {
+        window.alert("Letra no válida");
+        letra.focus();
+        letra.select();
+        return;
+    }
+    letrasPosibles = letrasPosibles.replace(letra.value.toLowerCase(), "");
+
+    const letrasUsadas = document.getElementById("letrasUsadas");
+    letrasUsadas.textContent += letra.value;
+
+    letra.focus();
+    letra.select();
+
+    // Vemos si la letra no está en la palabra
+    if(palabra.indexOf(letra.value) == -1) {
+        fallos++; // fallos += 1; fallos = fallos + 1;
+        const span = document.querySelector("#fallos span");
+        //const span = document.getElementById("fallos").getElementsByTagName("span")[0];
+        span.textContent = fallos;
+        const horca = document.getElementById("horca");
+        horca.style.backgroundPosition = fallos * -261 + "px";
+        if (fallos == INTENTOS_MAXIMOS) {
+            mostrarResultado("☹️ Has perdido");
+        }
+        return;
+    }
+    const spanes = document.querySelectorAll("#solucion span");
+    for (let i = 0; i < palabra.length; i++) {
+        if(letra.value.toLowerCase() === palabra[i]) {
+            spanes[i].innerText = letra.value;
+            aciertos++;
+        }
+    }
+
+    // Ver si ganó
+    if (aciertos == palabra.length) {
+        mostrarResultado("😄 Has ganado");
+    }
+}
+
+function mostrarResultado(texto) {
+    document.getElementById("comprobar").disabled = true;
+    const resultado = document.getElementById("resultado");
+    resultado.getElementsByTagName("p")[0].textContent = texto;
+    resultado.style.display = "block";
+}
+
+function reiniciar() {
+    document.getElementById("comprobar").disabled = false;
+    fallos = 0;
+    aciertos = 0;
+    letrasPosibles = "abcdefghijklmnopqrstuvwxyz";
+    const horca = document.getElementById("horca");
+    horca.style.backgroundPosition = 0;
+    document.getElementById("solucion").textContent = "";
+    const span = document.querySelector("#fallos span");
+    span.textContent = 0;
+    const letrasUsadas = document.getElementById("letrasUsadas");
+    letrasUsadas.textContent = "";
+    const letra = document.getElementById("letra");
+    letra.value = "";
+    letra.focus();
+    iniciar();
+}
+
+function iniciar() {
+    const posicion = Math.floor(Math.random() * palabras.length);
+    palabra = palabras[posicion];
+    //palabra = palabras[Math.floor(Math.random() * palabras.length)];
+    const solucion = document.getElementById("solucion");
+    for (const letra of palabra) {
+        const span = document.createElement("span");
+        span.classList.add("m-2");
+        span.textContent = "_";
+        solucion.appendChild(span);
+    }
+}
+
+function cerrar() {
+    document.getElementById("resultado").style.display = "none";
+}
+
+document.getElementById("comprobar").addEventListener("click", comprobar);
+document.getElementById("reiniciar").addEventListener("click", reiniciar);
+document.getElementById("cerrar").addEventListener("click", cerrar);
+
+iniciar();
+
+
