@@ -97,7 +97,7 @@ function comprobar() {
         }
         return;
     }
-    // Comprovamos si la letra está en la palabra, en cuyo caso aumentamos el número
+    // Comprobamos si la letra está en la palabra, en cuyo caso aumentamos el número
     // de aciertos
     const spanes = document.querySelectorAll("#solucion span");
     for (let i = 0; i < palabra.length; i++) {
